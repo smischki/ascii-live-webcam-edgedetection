@@ -31,5 +31,8 @@ horizontal (sobel_x)      vertical (sobel_y)
    | towards the bottom left | 112.5° to 157.5° | top left to bottom right | `\` |
 
 8. **Loop:** `requestAnimationFrame` repeats this about 60 times a second.
+
+**Have fun playing around with the value of threshhold!**
+![alt text](image.png)
  
 
