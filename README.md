@@ -12,12 +12,13 @@ Instead of shading every pixel by brightness alone, this version uses **Sobel ed
 4. **Sobel filter:** for each pixel, its 3 × 3 neighbourhood is compared with two kernels:
 ```
 horizontal (sobel_x)      vertical (sobel_y)
--1  0  1             -1 -2 -1
--2  0  2              0  0  0
--1  0  1              1  2  1
+-1  0  1                 -1 -2 -1
+-2  0  2                  0  0  0
+-1  0  1                  1  2  1
 ```
  
-`sobel_x` measures how much the brightness changes from left to right, and `sobel_y` measures how much it changes from top to bottom.
+   `sobel_x` measures how much the brightness changes from left to right, and `sobel_y` measures how much it changes from top to bottom.
+   
 5. **Edge strength:** the two are combined with `√(gx² + gy²)`. A big number means a sharp change, in other words an edge.
 6. **Edge direction:** `Math.atan2(gy, gx)` gives the angle the brightness changes in. An edge looks the same whichever side is bright, so the angle is folded into the range 0° to 180°.
 7. **Pick a character:** the edge itself runs at right angles to the brightness change, so each angle range gets the character at 90° to it. The four characters split the 180° into four 45° slices, each centred on its ideal angle:
