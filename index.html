@@ -29,8 +29,8 @@ pre {      /*shows text exactly as typed, browser doesnt tidy it up*/
 <script>
 
   const COLS = 400;   // how many chars wide
-  const sobel = [[-1,0,1],[-2,0,2],[-1,0,1]]; 
-  const sobel_T = [[-1,-2,-1],[0,0,0],[1,2,1]];
+  const sobel_x = [[-1,0,1],[-2,0,2],[-1,0,1]]; 
+  const sobel_y = [[-1,-2,-1],[0,0,0],[1,2,1]];
   const threshhold = 0.7;
 
 
@@ -90,8 +90,8 @@ pre {      /*shows text exactly as typed, browser doesnt tidy it up*/
       for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
           const b = brightness[(x + dx) + (y + dy) * COLS];
-          gx += b * sobel[dy + 1][dx + 1];   //+1 turns -1..1 into list positions 0..2
-          gy += b * sobel_T[dy + 1][dx + 1];
+          gx += b * sobel_x[dy + 1][dx + 1];   //+1 turns -1..1 into list positions 0..2
+          gy += b * sobel_y[dy + 1][dx + 1];
         }
       }
 
