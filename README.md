@@ -33,6 +33,9 @@ horizontal (sobel_x)      vertical (sobel_y)
 8. **Loop:** `requestAnimationFrame` repeats this about 60 times a second.
 
 **Have fun playing around with the value of threshhold!**
-![alt text](image.png)
+
+<p align="center">
+  <img src="image.png" width="500" alt="Edge ASCII mirror demo">
+</p>
  
 
