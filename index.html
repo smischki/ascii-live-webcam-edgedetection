@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ASCII Mirror</title>
+<style>
+body {
+  height: 100vh; /*100% of the windows height*/
+  margin: 0;
+  background: #000;
+  display: grid;  
+  place-items: center; /*this and line above puts ASCII picture in the middle of the screen*/
+  overflow: hidden;  /*hides scroll bar*/
+}
+
+pre {      /*shows text exactly as typed, browser doesnt tidy it up*/
+    margin: 0;
+    color: #7CFFB2;
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    line-height: 1.2;
+}
+</style>
+</head>
+
+
+<body>
+<pre id="out">Allow camera access to start :p</pre>
+
+<script>
+
+  const COLS = 400;   // how many chars wide
+  const sobel = [[-1,0,1],[-2,0,2],[-1,0,1]]; 
+  const sobel_T = [[-1,-2,-1],[0,0,0],[1,2,1]];
+  const threshhold = 0.7;
+
+
+  const out = document.getElementById("out");
+
+  const video = document.createElement("video");
+  video.playsInline = true; //play video inside browser, not fullscreen
+  video.muted = true;
+
+  // canvas: one pixel here = one character on screen
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+  let rows = 0;
+
+  //set the size
+  function resize() {
+    rows = Math.round(COLS * (video.videoHeight / video.videoWidth) * 0.5); //calculate rows from COLS to keep webcam ratio, chars are about twice as tall as wide -> use half as many rows
+    canvas.width = COLS;
+    canvas.height = rows;
+
+    ctx.setTransform(-1, 0, 0, 1, COLS, 0); //flip horizontally so it behaves like a mirror
+
+    fitText();
+  }
+
+  //finds largest font size where the picture still fits on screen
+  function fitText() {
+    const size = Math.min(innerWidth / (COLS * 0.6), innerHeight / (rows * 1.2));
+    out.style.fontSize = size + "px";
+  }
+
+  //main loop
+  function draw() {
+    
+    ctx.drawImage(video, 0, 0, COLS, rows);
+    const pixels = ctx.getImageData(0, 0, COLS, rows).data; //read color val of every pixel
+
+    const brightness = []; //collects brightness of all pixels
+        for (let i = 0; i < pixels.length; i += 4) {
+            brightness.push((0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]) / 255);
+    }
+ 
+    let text = "";
+ 
+   for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < COLS; x++) {
+      const lum = brightness[x + y * COLS]; //brightness of curr pixel
+
+      if (x === 0 || y === 0 || x === COLS - 1 || y === rows - 1) { //if pixel is at border doesnt have all neighbours -> skip
+        text += " ";
+        continue;
+      }
+
+      let gx = 0;
+      let gy = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const b = brightness[(x + dx) + (y + dy) * COLS];
+          gx += b * sobel[dy + 1][dx + 1];   //+1 turns -1..1 into list positions 0..2
+          gy += b * sobel_T[dy + 1][dx + 1];
+        }
+      }
+
+      // How strong the edge is.
+      const strength = Math.sqrt(gx * gx + gy * gy);
+
+      if (strength > threshhold) {
+        text += "#"
+      } else {
+        text += " ";
+      }
+    }
+    text += "\n";
+  }
+ 
+    out.textContent = text;
+ 
+    requestAnimationFrame(draw);
+
+  }
+
+  //start camera
+  async function start() {
+    try {
+      video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true}); //asks for camera 
+      await video.play();
+      resize();
+      addEventListener("resize", fitText); //whenever event the window is resized run fitText again
+      draw();
+    } catch (err) {
+      out.textContent = "Couldn't open the camera :((";
+    }
+  }
+
+  start();
+</script>
+</body>
+</html>
