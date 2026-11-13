@@ -85,8 +85,8 @@ pre {      /*shows text exactly as typed, browser doesnt tidy it up*/
         continue;
       }
 
-      let gx = 0;
-      let gy = 0;
+      let gx = 0; //gx collects matrix sobel multiplied by brightness of all 9 pixels in the 3x3 square around curr pixel
+      let gy = 0; //gy collects matrix sobel.T multiplied by brightness of all 9 pixels in the 3x3 square around curr pixel
       for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
           const b = brightness[(x + dx) + (y + dy) * COLS];
@@ -95,11 +95,26 @@ pre {      /*shows text exactly as typed, browser doesnt tidy it up*/
         }
       }
 
-      // How strong the edge is.
-      const strength = Math.sqrt(gx * gx + gy * gy);
+      const strength = Math.sqrt(gx * gx + gy * gy); //gradient magnitude 
 
       if (strength > threshhold) {
-        text += "#"
+
+        let angle = Math.atan2(gy, gx) * 180 / Math.PI; //since atan2 returns angle in radians, convert to degrees
+
+        if (angle < 0) angle += 180;  //edge looks same both ways around
+
+
+        if (angle < 22.5 || angle >= 157.5) { //for vertical edge, direction of biggest change is horizontal 
+          text += "|";
+        } else if (angle < 67.5) { 
+          text += "/";
+        } else if (angle < 112.5) {
+          text += "-";
+        } else {
+          text += "\\";
+        }
+
+
       } else {
         text += " ";
       }
