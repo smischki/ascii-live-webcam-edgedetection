@@ -2,7 +2,7 @@
  
 A live webcam mirror that finds the edges in your picture and draws them as ASCII lines that follow their direction, in real time, right in the browser.
  
-Instead of shading every pixel by brightness alone, this version uses **Sobel edge detection** to find where the picture changes sharply from dark to light. Each edge is drawn with the character that matches the way it runs (`|`, `/`, `-` or `\`).
+**Sobel edge detection** is used to find where the picture changes sharply from dark to light. Each edge is drawn with the character that matches the way it runs (`|`, `/`, `-` or `\`).
 
 ## How it works
  
